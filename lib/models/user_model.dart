@@ -14,6 +14,8 @@ class UserModel extends HiveObject {
   late String phone;
   @HiveField(4)
   late int status;
+  @HiveField(5)
+  late String id;
 
   UserModel({
     required this.email,
@@ -21,5 +23,6 @@ class UserModel extends HiveObject {
     required this.name,
     required this.phone,
     this.status = 0,
+    required this.id,
   });
 }

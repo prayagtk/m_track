@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:m_track/constant/colors.dart';
+import 'package:m_track/services/auth_service.dart';
 import 'package:m_track/widgets/appbutton.dart';
 import 'package:m_track/widgets/apptext.dart';
 import 'package:m_track/widgets/customtextformfiled.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -18,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _loginKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
+    final authservice = Provider.of<AuthService>(context);
     return SafeArea(
       child: Scaffold(
         backgroundColor: scaffoldBackgroundColor,
@@ -42,7 +45,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 SizedBox(height: 20),
                 CustomTextFormField(
-                  
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return "Please enter password";
@@ -60,9 +62,32 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 48,
                   width: 250,
                   color: Colors.orange,
-                  onTap: () {
+                  onTap: () async {
                     if (_loginKey.currentState!.validate()) {
-                      // Process data.
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (context) {
+                          return Center(child: CircularProgressIndicator());
+                        },
+                      );
+                      final user = await authservice.loginUser(
+                        _emailcontroller.text.trim(),
+                        _passwordcontroller.text,
+                      );
+                      if (user != null) {
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          '/home',
+                          (route) => false,
+                          arguments: user,
+                        );
+                      } else {
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("Invalid email or password")),
+                        );
+                      }
                     }
                   },
                   child: AppText(data: "Login", color: Colors.white),

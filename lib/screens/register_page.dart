@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:m_track/models/user_model.dart';
+import 'package:m_track/services/auth_service.dart';
 import 'package:m_track/widgets/appbutton.dart';
 import 'package:m_track/widgets/apptext.dart';
 import 'package:m_track/widgets/customtextformfiled.dart';
+import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -19,6 +23,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final _registerKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
+    final authservice = Provider.of<AuthService>(context);
     return Scaffold(
       body: SafeArea(
         child: Container(
@@ -93,9 +98,40 @@ class _RegisterPageState extends State<RegisterPage> {
                         height: 48,
                         width: 250,
                         color: Colors.orange,
-                        onTap: () {
+                        onTap: () async {
+                          var uuid = Uuid().v1();
                           if (_registerKey.currentState!.validate()) {
-                            // Process data.
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) {
+                                return Center(
+                                  child: CircularProgressIndicator(),
+                                );
+                              },
+                            );
+                            UserModel user = UserModel(
+                              id: uuid,
+                              email: _emailcontroller.text.trim(),
+                              password: _passwordcontroller.text.trim(),
+                              name: _namecontroller.text,
+                              phone: _phonecontroller.text,
+                              status: 1,
+                            );
+                            final res = await authservice.registerUser(user);
+                            Navigator.pop(context);
+                            if (res == true) {
+                              Navigator.pushReplacementNamed(context, '/login');
+                            } else {
+                              final snackBar = SnackBar(
+                                content: Text(
+                                  'Registration failed. Please try again.',
+                                ),
+                              );
+                              ScaffoldMessenger.of(
+                                context,
+                              ).showSnackBar(snackBar);
+                            }
                           }
                         },
                         child: AppText(data: "Register", color: Colors.white),

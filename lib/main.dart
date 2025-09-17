@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:m_track/constant/colors.dart';
 import 'package:m_track/models/user_model.dart';
+
+import 'package:m_track/screens/add_expense_page.dart';
 import 'package:m_track/screens/home_screen.dart';
 import 'package:m_track/screens/login_screen.dart';
 import 'package:m_track/screens/register_page.dart';
@@ -36,6 +38,7 @@ class MyApp extends StatelessWidget {
           '/login': (context) => LoginScreen(),
           '/register': (context) => RegisterPage(),
           '/home': (context) => HomeScreen(),
+          '/addExpense': (context) => AddExpensePage(),
         },
       ),
     );

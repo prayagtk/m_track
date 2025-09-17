@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:m_track/models/user_model.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService extends ChangeNotifier {
@@ -35,10 +36,10 @@ class AuthService extends ChangeNotifier {
     return null;
   }
 
-  Future<void> setloggedInStatus(bool isLoggedIn, String userId) async {
+  Future<void> setloggedInStatus(bool isLoggedIn, String id) async {
     final _preference = await SharedPreferences.getInstance();
     await _preference.setBool(_loggedInKey, isLoggedIn);
-    await _preference.setString('userId', userId);
+    await _preference.setString('userId', id);
   }
 
   Future<bool> isUserLoggedIn() async {
@@ -47,6 +48,9 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<UserModel?> getCurrentUser() async {
+    if (_userBox == null) {
+      await openBox();
+    }
     final isLoggedIn = await isUserLoggedIn();
     if (isLoggedIn) {
       final loggedInUserId = await getLoggedInUserId();

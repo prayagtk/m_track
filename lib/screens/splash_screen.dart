@@ -13,21 +13,17 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    // Future.delayed(Duration(seconds: 1), () {
-    //   Navigator.pushReplacementNamed(context, '/login');
-    // });
     checkLoginStatus();
     super.initState();
   }
 
   Future<void> checkLoginStatus() async {
-    // Simulate a delay for checking login status
     await Future.delayed(Duration(seconds: 2));
     final authservice = Provider.of<AuthService>(context, listen: false);
 
     final isLoggedIn = await authservice.isUserLoggedIn();
     if (isLoggedIn) {
-      Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+      Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false,);
     } else {
       Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
     }

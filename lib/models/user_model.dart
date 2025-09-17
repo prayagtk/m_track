@@ -22,7 +22,7 @@ class UserModel extends HiveObject {
     required this.password,
     required this.name,
     required this.phone,
-    this.status = 0,
+    required this.status,
     required this.id,
   });
 }

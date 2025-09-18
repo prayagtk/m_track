@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:m_track/constant/colors.dart';
-import 'package:m_track/models/expense_model.dart';
+import 'package:m_track/models/income_model.dart';
 import 'package:m_track/services/fin_service.dart';
 import 'package:m_track/widgets/appbutton.dart';
 import 'package:m_track/widgets/apptext.dart';
@@ -8,33 +8,38 @@ import 'package:m_track/widgets/customtextformfiled.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
-class AddExpensePage extends StatefulWidget {
+class AddIncomePage extends StatefulWidget {
   final uid;
-  const AddExpensePage({super.key, this.uid});
+  const AddIncomePage({super.key, this.uid});
 
   @override
-  State<AddExpensePage> createState() => _AddExpensePageState();
+  State<AddIncomePage> createState() => _AddIncomePageState();
 }
 
-class _AddExpensePageState extends State<AddExpensePage> {
+class _AddIncomePageState extends State<AddIncomePage> {
+  String? incCategory;
   TextEditingController _descriptionController = TextEditingController();
-  TextEditingController _expenseController = TextEditingController();
-  String? category;
-  final _expenseKey = GlobalKey<FormState>();
-  var expenseCategories = [
-    'Housing',
-    'Transportation',
-    'Food and Groceries',
-    'Healthcare',
-    'Debt Payments',
-    'Entertainment',
-    'Personal Care',
-    'Clothing and Accessories',
-    'Utilities and Bills',
-    'Savings and Investments',
-    'Education',
-    'Travel',
+  TextEditingController _incomeController = TextEditingController();
+
+  var incomeCategories = [
+    'Salary/Wages',
+    'Freelance/Consulting',
+    'Investment Income',
+    'Business Income',
+    'Side Hustle',
+    'Pension/Retirement',
+    'Alimony/Child Support',
+    'Gifts/Inheritance',
+    'Royalties',
+    'Savings Withdrawal',
+    'Bonus/Incentives',
+    'Commissions',
+    'Grants/Scholarships',
+    'Rental Income',
+    'Dividends',
   ];
+
+  final _incomeKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     final userService = Provider.of<UserService?>(context);
@@ -42,13 +47,13 @@ class _AddExpensePageState extends State<AddExpensePage> {
         ModalRoute.of(context)!.settings.arguments as String;
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(title: Text("Add Expense")),
+        appBar: AppBar(title: AppText(data: "Add Income")),
         body: Container(
           height: double.infinity,
           width: double.infinity,
           padding: EdgeInsets.all(20),
           child: Form(
-            key: _expenseKey,
+            key: _incomeKey,
             child: CustomScrollView(
               slivers: [
                 SliverFillRemaining(
@@ -59,12 +64,12 @@ class _AddExpensePageState extends State<AddExpensePage> {
                       DropdownButtonFormField(
                         dropdownColor: scaffoldBackgroundColor,
                         style: TextStyle(color: Colors.white),
-                        initialValue: category,
+                        initialValue: incCategory,
                         hint: AppText(
                           data: "Select Category",
                           color: Colors.white,
                         ),
-                        items: expenseCategories
+                        items: incomeCategories
                             .map(
                               (item) => DropdownMenuItem(
                                 value: item,
@@ -74,7 +79,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                             .toList(),
                         onChanged: (value) {
                           setState(() {
-                            category = value;
+                            incCategory = value;
                           });
                         },
                         validator: (value) {
@@ -101,7 +106,7 @@ class _AddExpensePageState extends State<AddExpensePage> {
                       ),
                       SizedBox(height: 20),
                       CustomTextFormField(
-                        controller: _expenseController,
+                        controller: _incomeController,
                         hintText: "Enter the amount",
                       ),
                       SizedBox(height: 40),
@@ -111,23 +116,20 @@ class _AddExpensePageState extends State<AddExpensePage> {
                         color: Colors.orange,
                         onTap: () {
                           var user_id = Uuid().v1();
-                          if (_expenseKey.currentState!.validate()) {
-                            ExpenseModel exp = ExpenseModel(
+                          if (_incomeKey.currentState!.validate()) {
+                            IncomeModel exp = IncomeModel(
                               id: user_id,
                               userId: currentUid,
-                              amount: double.parse(_expenseController.text),
+                              amount: double.parse(_incomeController.text),
                               description: _descriptionController.text,
-                              category: category.toString(),
+                              category: incCategory.toString(),
                               createdAt: DateTime.now(),
                             );
-                            userService!.addExpense(exp);
+                            userService!.addIncome(exp);
                             Navigator.pop(context);
                           }
                         },
-                        child: AppText(
-                          data: "Add Expense",
-                          color: Colors.black,
-                        ),
+                        child: AppText(data: "Add Income", color: Colors.black),
                       ),
                     ],
                   ),

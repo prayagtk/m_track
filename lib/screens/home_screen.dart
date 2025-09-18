@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:m_track/constant/colors.dart';
 import 'package:m_track/models/user_model.dart';
 import 'package:m_track/services/auth_service.dart';
+import 'package:m_track/services/fin_service.dart';
 import 'package:m_track/widgets/apptext.dart';
 import 'package:m_track/widgets/dashboard_widget.dart';
 import 'package:m_track/widgets/mydivider.dart';
@@ -16,8 +17,28 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  late Future<UserModel?> _initTotalsFuture = Future.value(
+    null,
+  ); // <-- initialize here
+
+  @override
+  void initState() {
+    super.initState();
+    final authService = Provider.of<AuthService>(context, listen: false);
+    _initTotalsFuture = authService.getCurrentUser().then((user) async {
+      if (user != null) {
+        await Provider.of<UserService>(
+          context,
+          listen: false,
+        ).initializeTotals(user.id);
+      }
+      return user;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final userService = Provider.of<UserService?>(context);
     Provider.of<AuthService>(context);
     return SafeArea(
       child: Scaffold(
@@ -25,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
         body: Consumer<AuthService>(
           builder: (context, authServices, child) {
             return FutureBuilder<UserModel?>(
-              future: authServices.getCurrentUser(),
+              future: _initTotalsFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return Center(child: CircularProgressIndicator());
@@ -59,9 +80,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                               SizedBox(width: 20),
-                              CircleAvatar(
-                                child: Text(
-                                  "${userData.name[0].toUpperCase()}",
+                              InkWell(
+                                onTap: () {
+                                  Navigator.pushNamed(context, '/profilePage');
+                                },
+                                child: CircleAvatar(
+                                  child: Text(
+                                    "${userData.name[0].toUpperCase()}",
+                                  ),
                                 ),
                               ),
                             ],
@@ -70,15 +96,25 @@ class _HomeScreenState extends State<HomeScreen> {
                           DashboardItemWidget(
                             onTap1: () {},
                             onTap2: () {},
-                            titleOne: "Expenses",
-                            titleTwo: "Income",
+                            titleOne: "Expenses\n${userService?.totalExpense}",
+                            titleTwo: "Income\n${userService?.totalIncome}",
                           ),
                           SizedBox(height: 20),
                           DashboardItemWidget(
                             onTap1: () {
-                              Navigator.pushNamed(context, '/addExpense');
+                              Navigator.pushNamed(
+                                context,
+                                '/addExpense',
+                                arguments: userData.id,
+                              );
                             },
-                            onTap2: () {},
+                            onTap2: () {
+                              Navigator.pushNamed(
+                                context,
+                                '/addIncome',
+                                arguments: userData.id,
+                              );
+                            },
                             titleOne: "Add Expense",
                             titleTwo: "Add Income",
                           ),
@@ -102,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         PieChartSectionData(
                                           radius: 50,
                                           color: chartColor1,
-                                          value: 80,
+                                          value: userService!.totalExpense,
                                           title: "Expense",
                                           titleStyle: TextStyle(
                                             color: Colors.white,
@@ -111,7 +147,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         PieChartSectionData(
                                           radius: 50,
                                           color: chartColor2,
-                                          value: 50,
+                                          value: userService.totalIncome,
                                           title: "Income",
                                           titleStyle: TextStyle(
                                             color: Colors.white,
@@ -128,7 +164,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     );
                   } else {
-                    print("not get data,user name is ${snapshot.data?.name}");
                     return Center(
                       child: AppText(
                         data: "No user data found",

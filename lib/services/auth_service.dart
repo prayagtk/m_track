@@ -18,7 +18,6 @@ class AuthService extends ChangeNotifier {
 
     await _userBox!.add(user);
     notifyListeners();
-    print("Success");
     return true;
   }
 
@@ -68,5 +67,12 @@ class AuthService extends ChangeNotifier {
     final _preference = await SharedPreferences.getInstance();
     final id = await _preference.getString('userId');
     return id;
+  }
+
+  Future<bool> logOut() async {
+    final _pref = await SharedPreferences.getInstance();
+    await _pref.clear();
+
+    return true;
   }
 }

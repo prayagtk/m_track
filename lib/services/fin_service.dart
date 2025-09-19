@@ -77,4 +77,18 @@ class UserService with ChangeNotifier {
     await _calculateTotalIncome(uid);
     await _calculateTotalExpense(uid);
   }
+
+  Future<void> deleteExpense(var expenseKey, String userId) async {
+    final expBox = await openExpenseBox();
+    await expBox.delete(expenseKey);
+    await _calculateTotalExpense(userId);
+    notifyListeners();
+  }
+
+  Future<void> deleteIncome(var incomeKey, String userId) async {
+    final incBox = await openIncomeBox();
+    await incBox.delete(incomeKey);
+    await _calculateTotalIncome(userId);
+    notifyListeners();
+  }
 }

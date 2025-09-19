@@ -6,7 +6,9 @@ import 'package:m_track/models/income_model.dart';
 import 'package:m_track/models/user_model.dart';
 import 'package:m_track/screens/add_expense_page.dart';
 import 'package:m_track/screens/add_income_page.dart';
+import 'package:m_track/screens/expense_list.dart';
 import 'package:m_track/screens/home_screen.dart';
+import 'package:m_track/screens/income_list_page.dart';
 import 'package:m_track/screens/login_screen.dart';
 import 'package:m_track/screens/profile_page.dart';
 import 'package:m_track/screens/register_page.dart';
@@ -53,6 +55,8 @@ class MyApp extends StatelessWidget {
           '/addExpense': (context) => AddExpensePage(),
           '/addIncome': (context) => AddIncomePage(),
           '/profilePage': (context) => ProfilePage(),
+          '/expenseList': (context) => ExpenseListPage(),
+          '/incomeList': (context) => IncomeListPage(),
         },
       ),
     );

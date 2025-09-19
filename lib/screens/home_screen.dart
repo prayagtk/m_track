@@ -19,7 +19,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late Future<UserModel?> _initTotalsFuture = Future.value(
     null,
-  ); // <-- initialize here
+  );
 
   @override
   void initState() {
